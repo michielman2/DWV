@@ -1,0 +1,101 @@
+rule all:
+    input:
+        '/students/2023-2024/Thema07/Sick_beez/primer3_output/omega_primer3.txt',
+        '/students/2023-2024/Thema07/Sick_beez/output_png/tree.png',
+        '/students/2023-2024/Thema07/Sick_beez/output_png/mutation.png'
+
+rule guppy:
+    input:
+        '/commons/Themas/Thema07/metagenomics/DWV/Sick_Beezzz/20191218_1217_MN30556_FAL66274_dd5dacb8/fast5_pass/'
+    output:
+        'output/guppy_out/'
+    shell:
+        '/opt/ont/ont-guppy/bin/guppy_basecaller -i {input} -s {output} -c /opt/ont/ont-guppy/data/rna_r9.4.1_70bps_hac.cfg --min_qscore 7 --recursive -x 'cuda:0' --num_callers 4 --gpu_runners_per_device 1 --chunks_per_runner 1024 --chunk_size 1000 --compress_fastq '
+
+
+rule cat_fastq:
+    input:
+        'output/guppy_out/pass/*.fastq.gz'
+    output:
+        'output/big_guppy/big_guppy.fastq'
+    shell:
+        'cat {input} | gunzip -c > {output}'
+        'gzip {output}'
+
+rule nanoplot: 
+    input: 
+        "output/big_guppy/big_guppy.fastq.gz" 
+    output: 
+        "output/Sick_beez/test_nano/nano"
+    shell: 
+        'NanoPlot --fastq {input} --outdir {output} --prefix "big_" --only-report'
+
+rule chopper:
+    input:
+        'output/big_guppy/big_guppy.fastq.gz'
+    output:
+        'output/trimmed_fastq/filtered_reads.fastq.gz'
+    shell:
+        'gunzip -c {input} | chopper -l 10000 | gzip > {output}'
+
+rule trimmed_nanoplot:
+    input:
+        'output/trimmed_fastq/filtered_reads.fastq.gz'
+    output:
+        'output/Sick_beez/trimmed_nanoplot/'
+    shell:
+        'NanoPlot --fastq {input} --outdir {output} --prefix "trimmed_" --only-report'
+
+rule fastq2fasta:
+    input:
+        'output/trimmed_fastq/filtered_reads.fastq.gz'
+    output:
+        'output/trimmed_fasta/filtered_reads.fasta'
+    shell:
+        'gunzip -c {input} | awk '{if(NR%4==1) {printf(">%s\n",substr($0,2));} else if(NR%4==2) print;}' > {input}'
+
+rule clustalo:
+    input:
+        'output/trimmed_fasta/filtered_reads.fasta'
+    output:
+        'output/output_clustalo/output_omega.aln',
+        'output/output_clustalo/output_tree.txt'
+    shell:
+        'clustalo -i {input} -o {output[0]} --threads 80 --guidetree-out {output[1]}'
+
+rule tree:
+    input:
+        'output/output_clustalo/output_tree.txt'
+    output:
+        'output/output_clustalo/output_png/tree.png'
+    script:
+        './scripts/tree.py'
+
+rule mutation_plot:
+    input:
+        'output/output_clustalo/output_omega.aln'
+    output:
+        'output/output_png/mutation.png'
+    shell:
+        './scripts/mutation.py'
+
+rule consensus:
+    input:
+        'output/output_clustalo/output_omega.aln'
+    output:
+        'output/consensus/omega_consensus.fasta'
+    shell:
+        './scripts/consensus.py'
+
+rule primer:
+    input:
+        'output/consensus/omega_consensus.fasta'
+    output:
+        'output/primer3_output/omega_primer3.txt'
+    shell:
+        './scripts/primer.py'
+
+
+
+
+
