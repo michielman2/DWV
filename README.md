@@ -1,21 +1,21 @@
-# DWV primer pipeline
+# DWV Primer Pipeline
 
-## benodigdheden:
+## Benodigdheden:
 
 ### Conda:
 
-Voor het runnen van deze pipeline hebben wij een conda environment gemaakt die alle benodigde packages bevat. Om deze environment te gebruiken moet je eerst conda geinstalleerd hebben.
+Voor het runnen van deze pipeline hebben wij een conda environment gemaakt die alle benodigde packages bevat. Om deze environment te gebruiken moet eerst conda geinstalleerd zijn.
 
-installeer conda hier:
+Installeer conda hier:
 https://conda.io/projects/conda/en/latest/user-guide/install/index.html
 
 Wanneer conda correct is geinstalleerd kan je de correcte environment instellen door de .yaml in de environment map in te laden.
 
 Laad de envoirenment door naar de DWV map te navigeren en dan dit command te runnen:
 
-#### conda env create -f environments/DWV_primer_pipeline.yaml
+#### Conda env create -f environments/DWV_primer_pipeline.yaml
 
-### tools
+### Tools
 
 Naast de packages in de conda environment hebben wij ook een aantal apparte tools gebruikt. Deze moeten ook op het systeem geinstalleerd zijn om de pipeline correct te runnen.
 
@@ -31,21 +31,21 @@ http://www.clustal.org/omega/
 
 Als de envoironment en de tools correct zijn geinstalleerd kan de snakemake pipeline voorbereid worden.
 
-### voorbereiden snakemake file
+### Voorbereiden snakemake file
 
 De snakemake file die in de map pipeline staat kan niet direct gerunned worden. Eerst moeten de bestands locaties en namen verandert worden. 
 
 Begin boven aan de snakemake file en vervang stapsgewijs de input en output regel zodat deze overeenkomt met de gewenste input en output.
 
-### snakemake runnen
+### Snakemake runnen
 
 Je kan de pipeline runnen door naar de DWV map te navigeren en dan de correcte conda environment te activeren door het volgende command te runnen:
 
-#### conda activate DWV_primer_pipeline
+#### Conda activate DWV_primer_pipeline
 
 Als de conda environment correct geactiveerd is kan de pipeline gerunned worden met het volgende command:
 
-#### snakemake -s pipeline/DWV_snakefile -c 1
+#### Snakemake -s pipeline/DWV_snakefile -c 1
 
 ## het runnen van de pipeline als snakemake niet werkt
 
