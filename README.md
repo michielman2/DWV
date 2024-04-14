@@ -50,3 +50,14 @@ Als de conda environment correct geactiveerd is kan de pipeline gerunned worden 
 ## het runnen van de pipeline als snakemake niet werkt
 
 De snakemake file is vooral gemaakt om het runnen van de pipeline door nieuwe mensen makkelijker te maken. Maar als dit om welke reden dan ook niet lukt is het altijd mogelijk om ons logboek te gebruiken die in de map logboek staat. Om stap voor stap de pipeline zelf te runnen. In het logboek staan de directe commands beschreven die gerunned zijn om tot ons resultaat te komen. Het is wel belangrijk om te onthouden dat het logboek alle genomen stappen beschrijft, dus er staan ook tools en stappen in die later uit de pipeline gehaald zijn. Dus als je de pipeline runned door het logboek te volgen. Let goed op welke stappen echt in de pipeline gebruikt worden.
+
+## systeem
+
+deze pipeline is gerunned op linux. Wij kunnen niet garanderen dat het werkt op een andere OS.
+
+## Bowtie2
+
+Wij hebben zelf na onze pipeline om de primers te vinden zelf ook nog bowtie2 gerunned op de data om naar bepaalde sequenties in onze data te zoeken. (meer informatie in het logboek)
+Dit staat helaas niet in onze pipeline omdat het ons niet gelukt was dit in snakemake te verwerken. Dit komt omdat de output die je mee geeft aan bowtie in de command line anders is
+dan de output files die hij geeft. Hierdoor herkent snakemake de output niet en geeft hij error messages waardoor de hele pipeline stopt. Als je deze stap toch wil repliceren kan je 
+onze stappen die in het logboek staan volgen.
