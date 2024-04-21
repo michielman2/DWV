@@ -33,23 +33,23 @@ Hier wordt de fastq file omgezet naar fasta zodat hij door clustalo gebruikt kan
 
 Er is een Multiple sequence allignment gemaakt van de data door clustalo. Er zijn 80 threads gebruikt om clustalo te runnen. Het duurde alsnog meer dan 2 uur dus als je geen toegang hebt tot veel cores zal deze stap lang duren als je veel data hebt.
 
-### guide tree
+### Guide tree
 
 Clustalo heeft ook een newick guide tree gemaakt. Deze wordt later omgezet naar een fylogenetische boom.
 
-### fylogenetische boom
+### Fylogenetische boom
 
 Met de python module ete3 wordt van de guide tree een fylogenetische boom gemaakt.
 
-### mutation plot
+### Mutation plot
 
 Met de python module biopython wordt een mutation plot gemaakt. In deze plot wordt afgebeeld hoeveel matches en mismatches er zijn voor iedere locatie in het genoom.
 
-### consensus sequentie
+### Consensus sequentie
 
 Met een zelf geschreven python script wordt er een consensus sequentie gemaakt. De consensus sequentie wordt gemaakt door bij iedere positie in de multiple sequence allignment te kijken welke base het vaakst voor komt. Als er één base meer dan 50% van de keren voorkomt wordt deze in de consensus sequentie geplaatst. Als er meer dan 50% van de keren een gap is wordt deze positie uit de consensus sequentie gehaald. Als er niks meer dan 50% van de keren voorkomt wordt er een gap in de consensus sequentie geplaatst
 
-### primers
+### Primers
 
 Met de python module primer3 worden primers gegenereerd vanuit de consensus sequentie. De standaard settings worden gebruikt en er worden 5 primers gegenereerd.
 
@@ -100,11 +100,11 @@ Als de conda environment correct geactiveerd is kan de pipeline gerunned worden 
 
 #### Snakemake -s pipeline/DWV_snakefile -c 1
 
-## het runnen van de pipeline als snakemake niet werkt
+## Het runnen van de pipeline als snakemake niet werkt
 
 De snakemake file is vooral gemaakt om het runnen van de pipeline door nieuwe mensen makkelijker te maken. Maar als dit om welke reden dan ook niet lukt is het altijd mogelijk om ons logboek te gebruiken die in de map logboek staat. Om stap voor stap de pipeline zelf te runnen. In het logboek staan de directe commands beschreven die gerunned zijn om tot ons resultaat te komen. Het is wel belangrijk om te onthouden dat het logboek alle genomen stappen beschrijft, dus er staan ook tools en stappen in die later uit de pipeline gehaald zijn. Dus als je de pipeline runned door het logboek te volgen. Let goed op welke stappen echt in de pipeline gebruikt worden.
 
-## systeem
+## Systeem
 
 deze pipeline is gerunned op linux. Wij kunnen niet garanderen dat het werkt op een andere OS.
 
