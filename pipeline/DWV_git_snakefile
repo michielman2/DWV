@@ -4,6 +4,10 @@ rule all:
         '/students/2023-2024/Thema07/Sick_beez/output_png/tree.png',
         '/students/2023-2024/Thema07/Sick_beez/output_png/mutation.png'
 
+# Deze rule runned guppy en basecalled de input data. 
+# Vervang de input met de locatie van je eigen data.
+# in shell vervang de locatie van guppy en het guppy model met je eigen model.
+# De input mag een fast5 file zijn of een map met fast5 files.
 rule guppy:
     input:
         '/commons/Themas/Thema07/metagenomics/DWV/Sick_Beezzz/20191218_1217_MN30556_FAL66274_dd5dacb8/fast5_pass/'
@@ -12,7 +16,8 @@ rule guppy:
     shell:
         '/opt/ont/ont-guppy/bin/guppy_basecaller -i {input} -s {output} -c /opt/ont/ont-guppy/data/rna_r9.4.1_70bps_hac.cfg --min_qscore 7 --recursive -x 'cuda:0' --num_callers 4 --gpu_runners_per_device 1 --chunks_per_runner 1024 --chunk_size 1000 --compress_fastq '
 
-
+# Deze rule zet meerdere fastq files om naar één grote fastq file.
+# Deze rule is alleen nodig als je meerdere fast5 files aan guppy hebt doorgegeven.
 rule cat_fastq:
     input:
         'output/guppy_out/pass/*.fastq.gz'
@@ -22,6 +27,7 @@ rule cat_fastq:
         'cat {input} | gunzip -c > {output}'
         'gzip {output}'
 
+# Deze rule geeft een nanoplot report voor de gecombineerde fastq file.
 rule nanoplot: 
     input: 
         "output/big_guppy/big_guppy.fastq.gz" 
@@ -30,6 +36,7 @@ rule nanoplot:
     shell: 
         'NanoPlot --fastq {input} --outdir {output} --prefix "big_" --only-report'
 
+# Deze rule trimmed de data zodat alleen reads langer dan 10kb overblijven, hierdoor houd je alleen DWV over.
 rule chopper:
     input:
         'output/big_guppy/big_guppy.fastq.gz'
@@ -38,6 +45,7 @@ rule chopper:
     shell:
         'gunzip -c {input} | chopper -l 10000 | gzip > {output}'
 
+# Deze rule geeft een nanoplot report van de DWV reads.
 rule trimmed_nanoplot:
     input:
         'output/trimmed_fastq/filtered_reads.fastq.gz'
@@ -46,6 +54,7 @@ rule trimmed_nanoplot:
     shell:
         'NanoPlot --fastq {input} --outdir {output} --prefix "trimmed_" --only-report'
 
+# Deze rule zet de fastq file om naar fasta zodat hij gebruikt kan worden door clustal omega.
 rule fastq2fasta:
     input:
         'output/trimmed_fastq/filtered_reads.fastq.gz'
@@ -54,6 +63,7 @@ rule fastq2fasta:
     shell:
         'gunzip -c {input} | awk '{if(NR%4==1) {printf(">%s\n",substr($0,2));} else if(NR%4==2) print;}' > {input}'
 
+# Deze rule geeft een multiple sequece allignment en guide tree.
 rule clustalo:
     input:
         'output/trimmed_fasta/filtered_reads.fasta'
@@ -63,6 +73,7 @@ rule clustalo:
     shell:
         'clustalo -i {input} -o {output[0]} --threads 80 --guidetree-out {output[1]}'
 
+# Deze rule zet de guide tree om naar een fylogenetische boom.
 rule tree:
     input:
         'output/output_clustalo/output_tree.txt'
@@ -71,6 +82,7 @@ rule tree:
     script:
         './scripts/tree.py'
 
+# Deze rule maakt een mutation plot van de multiple sequence allignment.
 rule mutation_plot:
     input:
         'output/output_clustalo/output_omega.aln'
@@ -79,6 +91,7 @@ rule mutation_plot:
     shell:
         './scripts/mutation.py'
 
+# Deze rule maakt een consensus sequentie van de multiple sequence allignment.
 rule consensus:
     input:
         'output/output_clustalo/output_omega.aln'
@@ -87,6 +100,7 @@ rule consensus:
     shell:
         './scripts/consensus.py'
 
+# Deze rule genereert primers van de consensus sequentie.
 rule primer:
     input:
         'output/consensus/omega_consensus.fasta'
