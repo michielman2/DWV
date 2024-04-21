@@ -1,5 +1,58 @@
 # DWV Primer Pipeline
 
+## Wat doet de pipeline?
+Deze pipeline is gemaakt om uit (minion) sequencing data primers te maken. Wij hebben de pipeline gebruikt om primers te maken voor DWV. De meest belangrijke stappen van de pipeline zijn de volgende stappen. sequencing data wordt gebasecalled, data wordt getrimmed zodat er alleen DWV reads overblijven, een multiple sequence allignment wordt gemaakt, een fylogenetische boom wordt een gemaakt, een mutation plot wordt gemaakt, een consensus sequentie wordt gemaakt en als laatste worden de primers gegenereerd.
+
+## De stappen in de pipeline
+
+### Basecalling
+
+In onze pipeline wordt Guppy gebruikt om de basecalling te doen. Hierbij wordt het model rna_r9.4.1_70bps_hac gebruikt. Om voor onze specifieke data zo goed mogelijk te basecallen. Bij de basecalling worden ook alle reads die een Qscore lager dan 7.5 hebben uit de data verwijderd. Als deze pipeline gerunned wordt met andere data moet er waarscijnlijk een ander model gebruikt worden dat voor die specifieke data bedoeld is. Guppy wordt in gpu mode gerunned zodat het veel sneller gaat.
+
+### Fastq combineren
+
+Hier worden alle fastq bestanden die door guppy gemaakt worden samengevoegd. Deze stap is nodig als de input voor guppy een map was met fast5 files inplaats van één fast5 file.
+
+### Nanoplot
+
+Hier wordt een naoplot report gemaakt voor de gecombineerde fastq files zodat de data van de reads bekeken kan worden.
+
+### Trimmen
+
+Hier worden alle reads die minder dan 10kb lang zijn uit de data gehaald. Zodat er alleen DWV reads over blijven.
+
+### Nanoplot
+
+Hier wordt een nanoplot report gemaakt van de DWV reads zodat er specifiek naar deze reads gekeken kan worden.
+
+### Fastq to fasta
+
+Hier wordt de fastq file omgezet naar fasta zodat hij door clustalo gebruikt kan worden.
+
+### Multiple sequence allignment
+
+Er is een Multiple sequence allignment gemaakt van de data door clustalo. Er zijn 80 threads gebruikt om clustalo te runnen. Het duurde alsnog meer dan 2 uur dus als je geen toegang hebt tot veel cores zal deze stap lang duren als je veel data hebt.
+
+### guide tree
+
+Clustalo heeft ook een newick guide tree gemaakt. Deze wordt later omgezet naar een fylogenetische boom.
+
+### fylogenetische boom
+
+Met de python module ete3 wordt van de guide tree een fylogenetische boom gemaakt.
+
+### mutation plot
+
+Met de python module biopython wordt een mutation plot gemaakt. In deze plot wordt afgebeeld hoeveel matches en mismatches er zijn voor iedere locatie in het genoom.
+
+### consensus sequentie
+
+Met een zelf geschreven python script wordt er een consensus sequentie gemaakt. De consensus sequentie wordt gemaakt door bij iedere positie in de multiple sequence allignment te kijken welke base het vaakst voor komt. Als er één base meer dan 50% van de keren voorkomt wordt deze in de consensus sequentie geplaatst. Als er meer dan 50% van de keren een gap is wordt deze positie uit de consensus sequentie gehaald. Als er niks meer dan 50% van de keren voorkomt wordt er een gap in de consensus sequentie geplaatst
+
+### primers
+
+Met de python module primer3 worden primers gegenereerd vanuit de consensus sequentie. De standaard settings worden gebruikt en er worden 5 primers gegenereerd.
+
 ## Benodigdheden:
 
 ### Conda:
